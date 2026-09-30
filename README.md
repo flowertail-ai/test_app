@@ -26,6 +26,15 @@ npm run dev
 
 ブラウザで http://localhost:3000 を開きます。
 
+## VS Code での簡易プレビュー(Node.js 不要)
+
+`preview/index.html` は、アプリの見た目と動作を再現した静的 HTML です。
+
+1. VS Code に拡張機能「Live Preview」(Microsoft)をインストール
+2. エクスプローラーで `preview/index.html` を右クリック →「Show Preview」
+
+※ `app/page.tsx` を手作業で再現したものなので、アプリを変更しても自動では反映されません。
+
 ## Vercel へのデプロイ
 
 1. このリポジトリを GitHub に push する
