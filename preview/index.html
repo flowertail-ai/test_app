@@ -11,7 +11,7 @@
     --bg: #f8fafc; --surface: #ffffff; --fg: #1e293b; --muted: #64748b; --faint: #94a3b8;
     --line: #e2e8f0; --line-soft: #f1f5f9; --hover: #f8fafc;
     --accent: #4f46e5; --accent-hover: #4338ca; --ring: #e0e7ff; --accent-border: #818cf8;
-    --danger: #dc2626; --danger-bg: #fef2f2; --note-bg: #eef2ff; --note-fg: #3730a3;
+    --danger: #dc2626; --danger-bg: #fef2f2; --warn: #ea580c; --note-bg: #eef2ff; --note-fg: #3730a3;
     --font: "Noto Sans JP", ui-sans-serif, system-ui, sans-serif;
     color-scheme: light;
   }
@@ -26,17 +26,30 @@
   .count { margin: 4px 0 0; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
   header { margin-bottom: 2rem; }
 
-  form { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+  form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 1.5rem; }
+  .row { display: flex; gap: 8px; }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opts label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
   #new-task { flex: 1; min-width: 0; font: inherit; font-size: 16px; color: var(--fg); background: var(--surface);
     border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; outline: none;
     box-shadow: 0 1px 2px rgb(0 0 0 / .05); transition: border-color .15s, box-shadow .15s; }
   #new-task::placeholder { color: var(--faint); }
-  #new-task:focus { border-color: var(--accent-border); box-shadow: 0 0 0 4px var(--ring); }
+  .field { font: inherit; font-size: 14px; color: var(--fg); background: var(--surface); border: 1px solid var(--line);
+    border-radius: 12px; padding: 8px 12px; outline: none; box-shadow: 0 1px 2px rgb(0 0 0 / .05); }
+  #new-task:focus, .field:focus { border-color: var(--accent-border); box-shadow: 0 0 0 4px var(--ring); }
   .add { font: inherit; font-weight: 500; color: #fff; background: var(--accent); border: 0; border-radius: 12px;
     padding: 12px 20px; cursor: pointer; transition: background .15s, opacity .15s; }
   .add:hover:not(:disabled) { background: var(--accent-hover); }
   .add:disabled { opacity: .4; cursor: not-allowed; }
-  .add:focus-visible, .del:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .add:focus-visible, .del:focus-visible, .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .filters { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+  .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .filter-label { width: 4rem; flex-shrink: 0; font-size: 12px; font-weight: 500; color: var(--muted); }
+  .chip { font: inherit; font-size: 12px; border: 0; border-radius: 999px; padding: 4px 12px; cursor: pointer;
+    background: var(--surface); color: #475569; box-shadow: inset 0 0 0 1px var(--line); transition: background .15s; }
+  .chip:hover { background: var(--line-soft); }
+  .chip[aria-pressed="true"] { background: var(--accent); color: #fff; box-shadow: none; }
 
   ul { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line);
     border-radius: 16px; overflow: hidden; box-shadow: 0 1px 2px rgb(0 0 0 / .05); }
@@ -44,9 +57,23 @@
   li + li { border-top: 1px solid var(--line-soft); }
   li:hover { background: var(--hover); }
   li input { width: 20px; height: 20px; flex-shrink: 0; cursor: pointer; accent-color: var(--accent); margin: 0; }
-  .text { flex: 1; min-width: 0; overflow-wrap: anywhere; transition: color .15s; }
+  .body { flex: 1; min-width: 0; }
+  .text { margin: 0; overflow-wrap: anywhere; transition: color .15s; }
   li.done .text { color: var(--faint); text-decoration: line-through; }
-  .del { font: inherit; font-size: 14px; color: var(--faint); background: none; border: 0; border-radius: 8px;
+  .meta { margin-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; }
+  li.done .meta { opacity: .5; }
+  .tag { border-radius: 999px; padding: 2px 8px; box-shadow: inset 0 0 0 1px var(--tag-ring); background: var(--tag-bg); color: var(--tag-fg); }
+  .c-仕事 { --tag-bg: #eff6ff; --tag-fg: #1d4ed8; --tag-ring: #bfdbfe; }
+  .c-プライベート { --tag-bg: #ecfdf5; --tag-fg: #047857; --tag-ring: #a7f3d0; }
+  .c-勉強 { --tag-bg: #f5f3ff; --tag-fg: #6d28d9; --tag-ring: #ddd6fe; }
+  .c-その他 { --tag-bg: #f1f5f9; --tag-fg: #475569; --tag-ring: #e2e8f0; }
+  .p-高 { --tag-bg: #fef2f2; --tag-fg: #b91c1c; --tag-ring: #fecaca; }
+  .p-中 { --tag-bg: #fffbeb; --tag-fg: #b45309; --tag-ring: #fde68a; }
+  .p-低 { --tag-bg: #f8fafc; --tag-fg: #64748b; --tag-ring: #e2e8f0; }
+  .due { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .due.overdue { color: var(--danger); font-weight: 500; }
+  .due.today { color: var(--warn); font-weight: 500; }
+  .del { flex-shrink: 0; font: inherit; font-size: 14px; color: var(--faint); background: none; border: 0; border-radius: 8px;
     padding: 4px 8px; cursor: pointer; transition: all .15s; }
   .del:hover { background: var(--danger-bg); color: var(--danger); }
   @media (min-width: 640px) { .del { opacity: 0; } li:hover .del, .del:focus { opacity: 1; } }
@@ -58,58 +85,131 @@
 </head>
 <body>
 <main>
-  <p class="note">静的プレビュー版です。Next.js版(app/page.tsx)の見た目・動作を再現しています。最初の3件はサンプルです。</p>
+  <p class="note">静的プレビュー版です。Next.js版(app/page.tsx)の見た目・動作を再現しています。最初のタスクはサンプルです。</p>
   <header>
     <h1>ToDoリスト</h1>
     <p class="count" id="count"></p>
   </header>
   <form id="form">
-    <input id="new-task" type="text" placeholder="新しいタスクを入力" aria-label="新しいタスク" autocomplete="off">
-    <button class="add" id="add" type="submit" disabled>追加</button>
+    <div class="row">
+      <input id="new-task" type="text" placeholder="新しいタスクを入力" aria-label="新しいタスク" autocomplete="off">
+      <button class="add" id="add" type="submit" disabled>追加</button>
+    </div>
+    <div class="opts">
+      <label>締切 <input id="due" class="field" type="date"></label>
+      <label>カテゴリ <select id="category" class="field"></select></label>
+      <label>優先度 <select id="priority" class="field"></select></label>
+    </div>
   </form>
+  <div class="filters" id="filters"></div>
   <div id="list"></div>
 </main>
 
 <script>
-  const KEY = "todos-preview";
+  const KEY = "todos-preview-v2";
+  const CATEGORIES = ["仕事", "プライベート", "勉強", "その他"];
+  const PRIORITIES = ["高", "中", "低"];
+  const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+
+  function dateString(offsetDays) {
+    const d = new Date();
+    d.setDate(d.getDate() + offsetDays);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+  function formatDue(due) {
+    const [y, m, d] = due.split("-").map(Number);
+    return `${m}/${d}(${WEEKDAYS[new Date(y, m - 1, d).getDay()]})`;
+  }
+
   const sample = [
-    { id: "s1", text: "牛乳を買う(サンプル)", done: true },
-    { id: "s2", text: "企画書のドラフトを書く(サンプル)", done: false },
-    { id: "s3", text: "歯医者の予約をする(サンプル)", done: false },
+    { id: "s1", text: "企画書のドラフトを書く(サンプル)", done: false, dueDate: dateString(3), category: "仕事", priority: "高" },
+    { id: "s2", text: "歯医者の予約をする(サンプル)", done: false, dueDate: dateString(-1), category: "プライベート", priority: "中" },
+    { id: "s3", text: "英単語を50個覚える(サンプル)", done: false, dueDate: dateString(0), category: "勉強", priority: "中" },
+    { id: "s4", text: "牛乳を買う(サンプル)", done: true, dueDate: dateString(1), category: "プライベート", priority: "低" },
+    { id: "s5", text: "本棚を整理する(サンプル)", done: false, category: "その他", priority: "低" },
   ];
   let todos = sample;
   try { const s = localStorage.getItem(KEY); if (s) todos = JSON.parse(s); } catch (e) {}
+  let categoryFilter = "すべて", priorityFilter = "すべて";
 
   const $ = (id) => document.getElementById(id);
-  const input = $("new-task"), addBtn = $("add"), list = $("list"), count = $("count");
+  const input = $("new-task"), addBtn = $("add"), list = $("list"), count = $("count"), filters = $("filters");
+  for (const c of CATEGORIES) $("category").append(new Option(c, c));
+  for (const p of PRIORITIES) $("priority").append(new Option(p, p));
+  $("category").value = "その他";
+  $("priority").value = "中";
 
   function save() { try { localStorage.setItem(KEY, JSON.stringify(todos)); } catch (e) {} }
   const uid = () => (window.crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()));
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+  function chipRow(label, options, value, onChange) {
+    const row = el("div", "filter-row");
+    row.append(el("span", "filter-label", label));
+    for (const opt of ["すべて", ...options]) {
+      const b = el("button", "chip", opt);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(value === opt));
+      b.onclick = () => { onChange(opt); render(); };
+      row.append(b);
+    }
+    return row;
+  }
 
   function render() {
+    const today = dateString(0);
+    const visible = todos
+      .filter((t) => (categoryFilter === "すべて" || t.category === categoryFilter) &&
+                     (priorityFilter === "すべて" || t.priority === priorityFilter))
+      .sort((a, b) => {
+        if (a.dueDate === b.dueDate) return 0;
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return a.dueDate < b.dueDate ? -1 : 1;
+      });
     const remaining = todos.filter((t) => !t.done).length;
-    count.textContent = todos.length === 0 ? "タスクを追加しましょう" : `残り ${remaining} 件 / 全 ${todos.length} 件`;
-    list.replaceChildren();
-    if (todos.length === 0) {
-      const d = document.createElement("div");
-      d.className = "empty"; d.textContent = "タスクはまだありません";
-      list.append(d); return;
+    count.textContent = todos.length === 0 ? "タスクを追加しましょう"
+      : `表示中 ${visible.length} 件(残り ${remaining} 件 / 全 ${todos.length} 件)`;
+
+    filters.replaceChildren();
+    filters.hidden = todos.length === 0;
+    if (todos.length > 0) {
+      filters.append(
+        chipRow("カテゴリ", CATEGORIES, categoryFilter, (v) => (categoryFilter = v)),
+        chipRow("優先度", PRIORITIES, priorityFilter, (v) => (priorityFilter = v)),
+      );
     }
-    const ul = document.createElement("ul");
-    for (const t of todos) {
-      const li = document.createElement("li");
-      if (t.done) li.className = "done";
+
+    list.replaceChildren();
+    if (visible.length === 0) {
+      list.append(el("div", "empty", todos.length === 0 ? "タスクはまだありません" : "該当するタスクはありません"));
+      return;
+    }
+    const ul = el("ul");
+    for (const t of visible) {
+      const li = el("li", t.done ? "done" : "");
       const cb = document.createElement("input");
       cb.type = "checkbox"; cb.checked = t.done;
       cb.setAttribute("aria-label", `「${t.text}」を${t.done ? "未完了" : "完了"}にする`);
       cb.onchange = () => { todos = todos.map((x) => x.id === t.id ? { ...x, done: !x.done } : x); save(); render(); };
-      const span = document.createElement("span");
-      span.className = "text"; span.textContent = t.text;
-      const del = document.createElement("button");
-      del.type = "button"; del.className = "del"; del.textContent = "削除";
+
+      const body = el("div", "body");
+      body.append(el("p", "text", t.text));
+      const meta = el("div", "meta");
+      meta.append(el("span", `tag c-${t.category}`, t.category), el("span", `tag p-${t.priority}`, `優先度:${t.priority}`));
+      if (t.dueDate) {
+        const overdue = !t.done && t.dueDate < today;
+        const dueToday = !t.done && t.dueDate === today;
+        meta.append(el("span", `due${overdue ? " overdue" : dueToday ? " today" : ""}`,
+          `締切 ${formatDue(t.dueDate)}${overdue ? " ・期限切れ" : dueToday ? " ・今日まで" : ""}`));
+      }
+      body.append(meta);
+
+      const del = el("button", "del", "削除");
+      del.type = "button";
       del.setAttribute("aria-label", `「${t.text}」を削除`);
       del.onclick = () => { todos = todos.filter((x) => x.id !== t.id); save(); render(); };
-      li.append(cb, span, del); ul.append(li);
+      li.append(cb, body, del); ul.append(li);
     }
     list.append(ul);
   }
@@ -119,8 +219,9 @@
     e.preventDefault();
     const text = input.value.trim();
     if (!text) return;
-    todos = [...todos, { id: uid(), text, done: false }];
-    input.value = ""; addBtn.disabled = true;
+    todos = [...todos, { id: uid(), text, done: false, dueDate: $("due").value || undefined,
+                         category: $("category").value, priority: $("priority").value }];
+    input.value = ""; $("due").value = ""; addBtn.disabled = true;
     save(); render();
   });
   render();
